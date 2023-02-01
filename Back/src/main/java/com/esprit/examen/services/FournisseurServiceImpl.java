@@ -79,7 +79,9 @@ public class FournisseurServiceImpl implements IFournisseurService {
 		Fournisseur fournisseur = fournisseurRepository.findById(idFournisseur).orElse(null);
 		SecteurActivite secteurActivite = secteurActiviteRepository.findById(idSecteurActivite).orElse(null);
         fournisseur.getSecteurActivites().add(secteurActivite);
-        fournisseurRepository.save(fournisseur);	
+        fournisseurRepository.save(fournisseur);
+		
+		
 	}
 
 	
