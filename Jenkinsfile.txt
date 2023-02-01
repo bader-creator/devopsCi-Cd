@@ -76,7 +76,8 @@ pipeline {
 }
     stage('Cleaning up') {
              steps{
-             sh "docker rmi $registry:$BUILD_NUMBER"
+	     sh "docker rmi ${frontend}:${env.BUILD_NUMBER} -f"
+	     sh "docker rmi ${backend}:${env.BUILD_NUMBER} -f"	
 }
 }
     stage('docker compose') {
