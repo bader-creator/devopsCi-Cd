@@ -1,8 +1,10 @@
 pipeline {
     environment{
-    registry="bader123/achatproject"
+    backend="bader123/achatprojectback"
+    frontend="bader123/achatprojectfront"
     registryCredential="dockerHub"
-    dokerImage="tpachatproject"
+    dokerImageBack=""
+    dokerImageFront=""	
 }
     agent any
     tools { 
@@ -13,7 +15,7 @@ pipeline {
         stage("Cloning Project"){
             steps {
                 git branch: 'main',
-                url: 'https://github.com/bader-creator/tpAchatProject.git';
+                url: 'https://github.com/bader-creator/devopsCi-Cd.git';
                 echo 'checkout stage'
             }
         }
@@ -48,10 +50,17 @@ pipeline {
                sh 'ls'
           }
        }
-       stage("docker build") {
+       stage("docker build back") {
                        steps{
                          script {
-                            dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                            dockerImageBack = docker.build("${backend}:${env.BUILD_NUMBER}", "Back/")
+                       }
+                 }
+       }
+	stage("docker build front") {
+                       steps{
+                         script {
+                            dockerImageFront = docker.build("${frontend}:${env.BUILD_NUMBER}", "Front/")
                        }
                  }
        }
@@ -59,7 +68,8 @@ pipeline {
               steps{
                  script {
                  docker.withRegistry( '', registryCredential ) {
-                  dockerImage.push()
+                  dockerImageBack.push()
+		  dockerImageFront.push()
     }
     }
    }
@@ -71,6 +81,7 @@ pipeline {
 }
     stage('docker compose') {
              steps{
+             sh "sed -i \"s/TAG=.*/TAG=${env.BUILD_NUMBER}/\" .env"
              sh "docker compose up -d"
 }
 }
